@@ -12,10 +12,14 @@ if [[ "$OSTYPE" = darwin* ]] ; then
 
   function battery_pct() {
     local smart_battery_status="$(ioreg -rc "AppleSmartBattery")"
-    typeset -F maxcapacity=$(echo $smart_battery_status | grep '^.*"MaxCapacity"\ =\ ' | sed -e 's/^.*"MaxCapacity"\ =\ //')
-    typeset -F currentcapacity=$(echo $smart_battery_status | grep '^.*"CurrentCapacity"\ =\ ' | sed -e 's/^.*CurrentCapacity"\ =\ //')
-    integer i=$(((currentcapacity/maxcapacity) * 100))
-    echo $i
+    if [[ $(echo "$smart_battery_status" | grep -c "MaxCapacity") -eq 1 ]] ; then
+      typeset -F maxcapacity=$(echo $smart_battery_status | grep '^.*"MaxCapacity"\ =\ ' | sed -e 's/^.*"MaxCapacity"\ =\ //')
+      typeset -F currentcapacity=$(echo $smart_battery_status | grep '^.*"CurrentCapacity"\ =\ ' | sed -e 's/^.*CurrentCapacity"\ =\ //')
+      integer i=$(((currentcapacity/maxcapacity) * 100))
+      echo $i
+    else
+      echo ""
+    fi
   }
 
   function plugged_in() {
@@ -108,6 +112,9 @@ elif [[ $(uname) == "Linux"  ]] ; then
 
 else
   # Empty functions so we don't cause errors in prompts
+  function battery_pct() {
+  }
+
   function battery_pct_remaining() {
   }
 
