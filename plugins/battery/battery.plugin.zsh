@@ -12,13 +12,13 @@ if [[ "$OSTYPE" = darwin* ]] ; then
 
   function battery_pct() {
     local smart_battery_status="$(ioreg -rc "AppleSmartBattery")"
-    if [[ $(echo "$smart_battery_status" | grep -c "MaxCapacity") -eq 1 ]] ; then
+    if [[ $(echo "$smart_battery_status" | grep -c "MaxCapacity") -gt 0 ]] ; then
       typeset -F maxcapacity=$(echo $smart_battery_status | grep '^.*"MaxCapacity"\ =\ ' | sed -e 's/^.*"MaxCapacity"\ =\ //')
       typeset -F currentcapacity=$(echo $smart_battery_status | grep '^.*"CurrentCapacity"\ =\ ' | sed -e 's/^.*CurrentCapacity"\ =\ //')
       integer i=$(((currentcapacity/maxcapacity) * 100))
       echo $i
     else
-      echo ""
+      echo 0
     fi
   }
 
