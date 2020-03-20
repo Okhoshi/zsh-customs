@@ -159,6 +159,7 @@ function prompt_git() {
     echo -n $branch$icons
     # Add length of git status, including a space and an arrow, to STATUSBAR_LENGTH
     (( STATUSBAR_LENGTH += $#branch + $#icons + 2 ))
+
   fi
 }
 
@@ -177,6 +178,12 @@ function helper_git_remote_status() {
       echo -n " ↑$ahead"
     fi
   fi
+}
+
+function helper_git_commit_hash() {
+  hash=$(command git rev-parse --short HEAD)
+  (( STATUSBAR_LENGTH += $#hash + 1 ))
+  echo -n "#$hash"
 }
 
 prompt_hg() {
@@ -260,6 +267,13 @@ prompt_status() {
   [[ -n "$symbols" ]] && prompt_segment_right black default "$symbols"
 }
 
+prompt_git_hash() {
+  if $(git rev-parse --is-inside-work-tree >/dev/null 2>&1); then
+    hash=$(helper_git_commit_hash)
+    prompt_segment_right cyan white "$hash"
+  fi
+}
+
 ## Main prompt
 build_prompt() {
   RETVAL=$?
@@ -280,6 +294,7 @@ statusbar_right() {
   RETVAL=$?
   prompt_start
   prompt_status
+  prompt_git_hash
   if [[ $(battery_pct) =~ [0-9]+ ]]; then
     prompt_segment_right white blue $(battery_level_gauge)
   else
