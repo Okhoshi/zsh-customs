@@ -25,6 +25,17 @@
 ### Segment drawing
 # A few utility functions to make it easy and re-usable to draw segmented prompts
 
+KUBE_PS1_PREFIX=''
+KUBE_PS1_SUFFIX=''
+KUBE_PS1_CTX_COLOR='white'
+KUBE_PS1_NS_COLOR='white'
+KUBE_PS1_BG_COLOR=''
+KUBE_PS1_SYMBOL_DEFAULT='⎈ '
+# Kube symbol is not rendered properly
+KUBE_PS1_SYMBOL_ENABLE='false'
+
+source "/usr/local/opt/kube-ps1/share/kube-ps1.sh"
+
 CURRENT_BG='NONE'
 MIDDLE_BG='NONE'
 SEGMENT_SEPARATOR=''
@@ -222,6 +233,14 @@ prompt_hg() {
 }
 
 
+function prompt_k8s {
+  if [[ "N/A" != "${KUBE_PS1_CONTEXT}" ]]; then
+    prompt_segment 006 black
+    echo -n $(kube_ps1)
+  fi
+}
+
+
 # Dir: current working directory, shortens if longer than available space
 function prompt_dir {
   local termwidth=$(helper_count_spacing)
@@ -279,6 +298,7 @@ build_prompt() {
   RETVAL=$?
   prompt_context
   prompt_dir
+  prompt_k8s
   prompt_git
   prompt_hg
   prompt_virtualenv

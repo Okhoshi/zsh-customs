@@ -3,6 +3,7 @@ func goinside() {
 }
 alias goinside="goinside "
 
+alias gbg="git for-each-ref --format='%(upstream:track);%(refname:short)' refs/heads | grep gone | awk -F';' '{ print \$2 }' | xargs git branch -D"
 
 # ------------------------------------
 # Docker alias and function
