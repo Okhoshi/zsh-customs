@@ -34,8 +34,6 @@ KUBE_PS1_SYMBOL_DEFAULT='⎈ '
 # Kube symbol is not rendered properly
 KUBE_PS1_SYMBOL_ENABLE='false'
 
-source "/usr/local/opt/kube-ps1/share/kube-ps1.sh"
-
 CURRENT_BG='NONE'
 MIDDLE_BG='NONE'
 SEGMENT_SEPARATOR=''
@@ -298,7 +296,9 @@ build_prompt() {
   RETVAL=$?
   prompt_context
   prompt_dir
-  prompt_k8s
+  if [[ "${KUBE_PS1_ENABLED}" != "off" ]] && command -v kubectl &> /dev/null; then
+    prompt_k8s
+  fi
   prompt_git
   prompt_hg
   prompt_virtualenv
