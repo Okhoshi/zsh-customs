@@ -1,13 +1,20 @@
-func goinside() {
-	docker exec -ti $1 bash
-}
-alias goinside="goinside "
-
 alias gbg="git for-each-ref --format='%(upstream:track);%(refname:short)' refs/heads | grep gone | awk -F';' '{ print \$2 }' | xargs git branch -D"
 
 # ------------------------------------
 # Docker alias and function
 # ------------------------------------
+
+# Set Docker Context to existing context, e.g. dcx home
+alias dcx="docker context use"
+
+# Reset Docker Context to default
+alias dcxoff="DOCKER_CONTEXT=default docker context use default"
+
+# List Docker Contexts safely
+alias dcxls="DOCKER_CONTEXT=default docker context ls"
+
+# List Docker Contexts not safe
+alias dcx-ls="docker context ls"
 
 # Get latest container ID
 alias dl="docker ps -l -q"
@@ -54,8 +61,6 @@ dalias() { alias | grep 'docker' | sed "s/^\([^=]*\)=\(.*\)/\1 => \2/"| sed "s/[
 # Bash into running container
 dbash() { docker exec -it $(docker ps -aqf "name=$1") bash; }
 
-alias dm='docker-machine'
-alias dmx='docker-machine ssh'
 alias dk='docker'
 alias dki='docker images'
 alias dks='docker service'

@@ -94,6 +94,8 @@ function prompt_segment_right() {
 prompt_context() {
   if [[ "$USER" != "$DEFAULT_USER" || -n "$SSH_CLIENT" ]]; then
     prompt_segment black default "%(!.%{%F{yellow}%}.)$USER@%m"
+  else
+    prompt_segment black default "▸"
   fi
 }
 
@@ -190,7 +192,7 @@ function helper_git_remote_status() {
 }
 
 function helper_git_commit_hash() {
-  hash=$(command git rev-parse --short HEAD)
+  hash=$(command git rev-parse --short HEAD 2> /dev/null || echo '✘')
   (( STATUSBAR_LENGTH += $#hash + 1 ))
   echo -n "#$hash"
 }
@@ -291,6 +293,17 @@ prompt_git_hash() {
   fi
 }
 
+function prompt_docker_ctx() {
+  if command -v docker &> /dev/null; then
+    local docker_ctx=$(echo $(timeout 1s docker context inspect -f "{{ .Name }}"; [[ $? -eq 124 ]] && echo "timeout") | head -n1)
+    if [[ "${docker_ctx}" == "timeout" ]]; then
+      prompt_segment white red "🐳 ⚠️ "
+    elif [[ -n "${docker_ctx}" && "${docker_ctx}" != "default" ]]; then
+      prompt_segment white blue "🐳 $docker_ctx"
+    fi
+  fi
+}
+
 ## Main prompt
 build_prompt() {
   RETVAL=$?
@@ -299,6 +312,7 @@ build_prompt() {
   if [[ "${KUBE_PS1_ENABLED}" != "off" ]] && command -v kubectl &> /dev/null; then
     prompt_k8s
   fi
+  prompt_docker_ctx
   prompt_git
   prompt_hg
   prompt_virtualenv
