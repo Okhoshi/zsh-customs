@@ -1,5 +1,21 @@
 alias gbg="git for-each-ref --format='%(upstream:track);%(refname:short)' refs/heads | grep gone | awk -F';' '{ print \$2 }' | xargs git branch -D"
 
+git-all() {
+  for gr in $(find . -name .git -d 2 | sed 's/\/.git$//' | sort); do
+    echo "Repository ${gr}"
+    git -C $gr $@
+  done
+}
+
+all-gbg() {
+  for gr in $(find . -name .git -d 2 | sed 's/\/.git$//' | sort); do
+    echo "Repository ${gr}"
+    git -C $gr for-each-ref --format='%(upstream:track);%(refname:short)' refs/heads | grep gone | awk -F';' '{ print $2 }' | xargs git -C $gr branch -D
+  done
+}
+
+alias gaw="git-all working"
+
 # ------------------------------------
 # Docker alias and function
 # ------------------------------------
