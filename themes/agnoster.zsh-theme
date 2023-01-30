@@ -329,12 +329,17 @@ statusbar_right() {
   prompt_start
   prompt_status
   prompt_git_hash
+
+  if command -v arch &> /dev/null; then
+    prompt_segment_right 117 033 $(arch)
+  fi
+
   if [[ $(battery_pct) =~ [0-9]+ ]]; then
     prompt_segment_right white blue $(battery_level_gauge)
   else
     prompt_segment_right white blue $(battery_pct_prompt)
-  fi    
-  
+  fi
+
   prompt_segment_right black white %D{%H:%M:%S}
 }
 
